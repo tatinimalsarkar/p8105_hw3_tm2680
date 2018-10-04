@@ -8,5 +8,14 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+devtools::install_github("p8105/p8105.datasets")
 ```
 
+# Problem 1
+```{r load_brfss}
+library(p8105.datasets)
+brfss_data = brfss_smart2010 %>% 
+  janitor::clean_names() %>% 
+  filter(topic == "Overall Health") %>% 
+  select(-class, -topic, -question, -data_value_footnote_symbol:-geo_location)
+```
