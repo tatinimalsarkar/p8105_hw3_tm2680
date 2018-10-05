@@ -32,6 +32,11 @@ brfss_data %>%
 In 2002, Connecticut, Florida, Massachusetts, North Carolina, New Jersey, and Pennsylvania were all observed at 7 distinct locations.
 
 ```{r spag_plot}
-
+brfss_data %>% 
+  group_by(locationabbr, year) %>% 
+  summarize(n_obs = n()) %>% 
+  ggplot(aes(x = year, y = n_obs, color = locationabbr)) + 
+  geom_line() + 
+  theme(legend.position = "bottom")
 ```
 
