@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 devtools::install_github("p8105/p8105.datasets")
+library(ggridges)
 ```
 
 # Problem 1
@@ -29,7 +30,7 @@ brfss_data %>%
   filter(n >= 7)
 ```
 
-In 2002, Connecticut, Florida, Massachusetts, North Carolina, New Jersey, and Pennsylvania were all observed at 7 distinct locations.
+In 2002, Connecticut, Florida, Massachusetts, North Carolina, New Jersey, and Pennsylvania were all observed at 7 distinct locations in the `brfss_data` dataset.
 
 ```{r brfss_spag_plot}
 brfss_data %>% 
@@ -40,7 +41,7 @@ brfss_data %>%
   theme(legend.position = "bottom")
 ```
 
-Here is my spaghetti plot. The colors correspond to state, and the data is from 2002 to 2010. 
+Here is my spaghetti plot showing the number of observations across time for the `brfss_data` dataset. The colors correspond to state, and the data is from 2002 to 2010. 
 
 ```{r brfss_tab_exc}
 brfss_data %>% 
@@ -56,6 +57,17 @@ brfss_data %>%
 This is my table that shows the mean and standard deviation for the proportion of "Excellent" responses across counties in New York. NA standard deviations mean that there was only 1 observation for that county.
 
 ```{r brfss_prop_resp}
-brfss_data 
+brfss_data %>% 
+  group_by(year, locationabbr) %>% 
+  spread(response, data_value) %>% 
+  janitor::clean_names() %>% 
+  summarize(mean_exc = mean(excellent, na.rm = TRUE),
+            mean_vgood = mean(very_good, na.rm = TRUE),
+            mean_good = mean(good, na.rm = TRUE),
+            mean_fair = mean(fair, na.rm = TRUE),
+            mean_poor = mean(poor, na.rm = TRUE)) %>% 
+  ggplot(aes(x = year, y = mean_exc)) +
+  geom_point(alpha = .05) +
+  facet_grid(. ~ mean_exc)
 ```
 
