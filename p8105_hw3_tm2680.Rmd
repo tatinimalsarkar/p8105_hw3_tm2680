@@ -12,10 +12,26 @@ devtools::install_github("p8105/p8105.datasets")
 ```
 
 # Problem 1
-```{r load_brfss}
+```{r clean_brfss}
 library(p8105.datasets)
 brfss_data = brfss_smart2010 %>% 
   janitor::clean_names() %>% 
   filter(topic == "Overall Health") %>% 
-  select(-class, -topic, -question, -data_value_footnote_symbol:-geo_location)
+  select(-class, -topic, -question, -data_value_footnote_symbol:-respid) %>% 
+  mutate(response = factor(response, levels = c("Poor", "Fair", "Good", "Very good", "Excellent"))) 
 ```
+
+```{r seven_loc}
+brfss_data %>% 
+  filter(year == 2002) %>% 
+  group_by(locationabbr) %>% 
+  summarize(n = n_distinct(geo_location)) %>% 
+  filter(n >= 7)
+```
+
+In 2002, Connecticut, Florida, Massachusetts, North Carolina, New Jersey, and Pennsylvania were all observed at 7 distinct locations.
+
+```{r spag_plot}
+
+```
+
