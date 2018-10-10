@@ -19,7 +19,7 @@ brfss_data = brfss_smart2010 %>%
   janitor::clean_names() %>% 
   filter(topic == "Overall Health") %>% 
   select(-class, -topic, -question, -data_value_footnote_symbol:-respid) %>% 
-  mutate(response = factor(response, levels = c("Excellent", "Very good", "Good", "Fair", "Poor"))) 
+  mutate(response = factor(response, levels = c("Excellent", "Very good", "Good", "Fair", "Poor", ordered = TRUE))) 
 ```
 
 ```{r brfss_seven_loc}
@@ -35,13 +35,13 @@ In 2002, Connecticut, Florida, Massachusetts, North Carolina, New Jersey, and Pe
 ```{r brfss_spag_plot}
 brfss_data %>% 
   group_by(locationabbr, year) %>% 
-  summarize(n_obs = n()) %>% 
-  ggplot(aes(x = year, y = n_obs, color = locationabbr)) + 
+  mutate(n = n_distinct(geo_location)) %>% 
+  ggplot(aes(x = year, y = n, color = locationabbr)) + 
   geom_line() + 
   theme(legend.position = "bottom")
 ```
 
-Here is my spaghetti plot showing the number of observations across time for the `brfss_data` dataset. The colors correspond to state, and the data is from 2002 to 2010. 
+Here is my spaghetti plot showing the number of locations across time for the `brfss_data` dataset. The colors correspond to state, and the data is from 2002 to 2010. 
 
 ```{r brfss_tab_exc}
 brfss_data %>% 
@@ -58,16 +58,8 @@ This is my table that shows the mean and standard deviation for the proportion o
 
 ```{r brfss_prop_resp}
 brfss_data %>% 
-  group_by(year, locationabbr) %>% 
   spread(response, data_value) %>% 
   janitor::clean_names() %>% 
-  summarize(mean_exc = mean(excellent, na.rm = TRUE),
-            mean_vgood = mean(very_good, na.rm = TRUE),
-            mean_good = mean(good, na.rm = TRUE),
-            mean_fair = mean(fair, na.rm = TRUE),
-            mean_poor = mean(poor, na.rm = TRUE)) %>% 
-  ggplot(aes(x = year, y = mean_exc)) +
-  geom_point(alpha = .05) +
-  facet_grid(. ~ mean_exc)
+  group_by(year, locationabbr, excellent, very_good, good, fair, poor) 
 ```
 
