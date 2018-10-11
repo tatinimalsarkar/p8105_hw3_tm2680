@@ -81,14 +81,28 @@ brfss_data %>%
 Here is my 5-panel plot of distribution of state-level averages of the response types over time.
 
 # Problem 2
+
+ADD INTRO DESCRIPTIVE PARAGRAPH
+
 ```{r insta_expl}
 library(p8105.datasets)
-insta_dat = instacart %>% 
+instacart %>% 
   janitor::clean_names() %>%
   group_by(aisle_id) %>% 
   summarize(n_aisle = n()) %>% 
   filter(min_rank(desc(n_aisle)) < 2)
 ```
-
-FIGURE OUT INLINE CODE!!!
+MAYBE ADD INLINE???!!!
 The `instacart` dataset contains 134 aisles. The aisle with the most items ordered was aisle 83.
+
+```{r insta_item_plot}
+library(p8105.datasets)
+instacart %>% 
+  janitor::clean_names() %>% 
+  group_by(aisle_id) %>% 
+  summarize(n_aisle = n()) %>%
+  ggplot(aes(x = aisle_id, y = n_aisle)) + 
+  geom_line() +
+  theme(legend.position = "bottom")
+```
+
