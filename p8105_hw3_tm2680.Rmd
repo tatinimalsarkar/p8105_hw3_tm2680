@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 devtools::install_github("p8105/p8105.datasets")
 library(ggridges)
+devtools::install_github("thomasp85/patchwork")
 ```
 
 # Problem 1
@@ -58,8 +59,21 @@ This is my table that shows the mean and standard deviation for the proportion o
 
 ```{r brfss_prop_resp}
 brfss_data %>% 
+  group_by(year, locationabbr) %>% 
   spread(response, data_value) %>% 
   janitor::clean_names() %>% 
-  group_by(year, locationabbr, excellent, very_good, good, fair, poor) 
+  summarize(mean_exc = mean(excellent, na.rm = TRUE),
+            mean_vgood = mean(very_good, na.rm = TRUE),
+            mean_good = mean(good, na.rm = TRUE),
+            mean_fair = mean(fair, na.rm = TRUE),
+            mean_poor = mean(poor, na.rm = TRUE)) %>% 
+  gather(response, data_value, mean_exc:mean_poor) %>% 
+  ggplot(aes(x = year, y = data_value, color = locationabbr)) +
+  geom_line() + 
+  facet_grid( ~ response)
+  theme(legend.position = "bottom")
 ```
 
+Here is my 5-panel plot of distribution of state-level averages of the response types over time.
+
+# Problem 2
