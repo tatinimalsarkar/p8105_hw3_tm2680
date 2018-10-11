@@ -83,11 +83,12 @@ Here is my 5-panel plot of distribution of state-level averages of the response 
 # Problem 2
 ```{r insta_expl}
 library(p8105.datasets)
-instacart %>% 
-  janitor::clean_names() %>% 
+insta_dat = instacart %>% 
+  janitor::clean_names() %>%
   group_by(aisle_id) %>% 
-  summarize(n()) 
+  summarize(n_aisle = n()) %>% 
+  filter(min_rank(desc(n_aisle)) < 2)
 ```
 
-The `instacart` dataset contains 134 aisles. The aisle with the most 
- 
+FIGURE OUT INLINE CODE!!!
+The `instacart` dataset contains 134 aisles. The aisle with the most items ordered was aisle 83.
