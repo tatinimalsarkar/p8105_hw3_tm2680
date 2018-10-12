@@ -130,7 +130,9 @@ insta_app_coff = instacart %>%
   summarize(mean_hour = mean(order_hour_of_day)) %>% 
   mutate(order_dow = order_dow + 1,
     day = lubridate::wday(order_dow, label = TRUE, abbr = TRUE, week_start = getOption("lubridate.week.start", 7)),
-    hour = lubridate::hour(date_decimal(mean_hour)))
+    hour = lubridate::hour(date_decimal(mean_hour)),
+    hour = format(strptime(hour, format = "%H"), "%I %p")
+    )
 ```
 
 FINISH THIS! YOU'RE NOT DONE YET!
