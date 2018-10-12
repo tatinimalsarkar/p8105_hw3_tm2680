@@ -106,3 +106,18 @@ instacart %>%
   theme(legend.position = "bottom")
 ```
 
+Here is my plot of how many items are getting ordered in each aisle.
+
+```{r insta_tab_pop}
+library(p8105.datasets)
+instacart %>% 
+  janitor::clean_names() %>% 
+  filter(aisle == "baking ingredients" | aisle == "dog food care" | aisle == "packaged vegetables fruits") %>% 
+  group_by(aisle, product_name) %>% 
+  summarize(n_prod_ord = n()) %>% 
+  filter(min_rank(desc(n_prod_ord)) < 2) %>% 
+  select(-n_prod_ord) %>% 
+  as_tibble()
+```
+Here is my table that shows the most popular item in each of the following aisles.
+
