@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 devtools::install_github("p8105/p8105.datasets")
 library(ggridges)
-devtools::install_github("thomasp85/patchwork")
+library(lubridate)
 ```
 
 # Problem 1
@@ -83,6 +83,7 @@ Here is my 5-panel plot of distribution of state-level averages of the response 
 # Problem 2
 
 ADD INTRO DESCRIPTIVE PARAGRAPH
+We assume that `order_dow` = 0 corresponds to Sunday.
 
 ```{r insta_expl}
 library(p8105.datasets)
@@ -121,3 +122,15 @@ instacart %>%
 ```
 Here is my table that shows the most popular item in each of the following aisles.
 
+```{r insta_app_coff}
+library(p8105.datasets)
+insta_app_coff = instacart %>% 
+  filter(product_name == "Pink Lady Apples" | product_name == "Coffee Ice Cream") %>% 
+  group_by(product_name, order_dow) %>% 
+  summarize(mean_hour = mean(order_hour_of_day)) %>% 
+  mutate(order_dow = order_dow + 1,
+    day = lubridate::wday(order_dow, label = TRUE, abbr = TRUE, week_start = getOption("lubridate.week.start", 7)),
+    hour = lubridate::hour(date_decimal(mean_hour)))
+```
+
+FINISH THIS! YOU'RE NOT DONE YET!
