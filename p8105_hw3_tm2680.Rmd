@@ -131,8 +131,9 @@ insta_app_coff = instacart %>%
   mutate(order_dow = order_dow + 1,
     day = lubridate::wday(order_dow, label = TRUE, abbr = TRUE, week_start = getOption("lubridate.week.start", 7)),
     hour = lubridate::hour(date_decimal(mean_hour)),
-    hour = format(strptime(hour, format = "%H"), "%I %p")
-    )
+    hour = format(strptime(hour, format = "%H"), "%I %p")) %>% 
+  select(-order_dow, -mean_hour) %>% 
+  spread(day, hour)
 ```
 
 FINISH THIS! YOU'RE NOT DONE YET!
