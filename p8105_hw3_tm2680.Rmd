@@ -58,7 +58,7 @@ brfss_data %>%
             sd_exc = sd(excellent, na.rm = TRUE)) 
 ```
 
-This is my table that shows the mean and standard deviation for the proportion of "Excellent" responses across locations in New York for the years 2002, 2006, and 2010. 
+This is my table that shows the mean and standard deviation for the proportion of "Excellent" responses across all locations in New York for the years 2002, 2006, and 2010. 
 
 ```{r brfss_prop_resp}
 library(p8105.datasets)
@@ -82,8 +82,7 @@ Here is my 5-panel plot of distribution of state-level averages of the response 
 
 # Problem 2
 
-ADD INTRO DESCRIPTIVE PARAGRAPH
-We assume that `order_dow` = 0 corresponds to Sunday.
+The `instacart` dataset contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. These variables describe orders from Instacart, a grocery service. For instance, `aisle` (e.g. fresh fruits) and `department`  (e.g. canned goods) refer to the aisle and department the specific product within that order comes from. Every product from each order is listed as its own observation. For example, `order_id` 1 has 8 observations, related to 8 different products. We assume that `order_dow` = 0 corresponds to Sunday.
 
 ```{r insta_expl}
 library(p8105.datasets)
@@ -93,7 +92,7 @@ instacart %>%
   summarize(n_aisle = n()) %>% 
   filter(min_rank(desc(n_aisle)) < 2)
 ```
-MAYBE ADD INLINE???!!!
+
 The `instacart` dataset contains 134 aisles. The aisle with the most items ordered was aisle 83.
 
 ```{r insta_item_plot}
@@ -136,4 +135,3 @@ instacart %>%
   spread(day, hour)
 ```
 
-FINISH THIS! YOU'RE NOT DONE YET!
