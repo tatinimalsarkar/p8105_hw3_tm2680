@@ -20,7 +20,7 @@ brfss_data = brfss_smart2010 %>%
   janitor::clean_names() %>% 
   filter(topic == "Overall Health") %>% 
   select(-class, -topic, -question, -data_value_footnote_symbol:-respid) %>% 
-  mutate(response = factor(response, levels = c("Excellent", "Very good", "Good", "Fair", "Poor", ordered = TRUE))) 
+  mutate(response = factor(response, levels = c("Poor", "Fair", "Good", "Very good", "Excellent", ordered = TRUE))) 
 ```
 
 ```{r brfss_seven_loc}
@@ -50,7 +50,7 @@ Here is my spaghetti plot showing the number of locations across time for the `b
 library(p8105.datasets)
 brfss_data %>% 
   filter(locationabbr == "NY") %>% 
-  group_by(locationdesc) %>% 
+  group_by(year) %>% 
   spread(response, data_value) %>% 
   janitor::clean_names() %>% 
   filter(year == 2002 | year == 2006 | year == 2010) %>% 
@@ -58,7 +58,7 @@ brfss_data %>%
             sd_exc = sd(excellent, na.rm = TRUE)) 
 ```
 
-This is my table that shows the mean and standard deviation for the proportion of "Excellent" responses across counties in New York. NA standard deviations mean that there was only 1 observation for that county.
+This is my table that shows the mean and standard deviation for the proportion of "Excellent" responses across locations in New York for the years 2002, 2006, and 2010. 
 
 ```{r brfss_prop_resp}
 library(p8105.datasets)
