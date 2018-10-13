@@ -29,16 +29,16 @@ brfss_data %>%
   filter(year == 2002) %>% 
   group_by(locationabbr) %>% 
   summarize(n = n_distinct(geo_location)) %>% 
-  filter(n >= 7)
+  filter(n == 7)
 ```
 
-In 2002, Connecticut, Florida, Massachusetts, North Carolina, New Jersey, and Pennsylvania were all observed at 7 distinct locations in the `brfss_data` dataset.
+In 2002, Connecticut, Florida, and North Carolina were all observed at 7 distinct locations in the `brfss_data` dataset.
 
 ```{r brfss_spag_plot}
 library(p8105.datasets)
 brfss_data %>% 
   group_by(locationabbr, year) %>% 
-  mutate(n = n_distinct(geo_location)) %>% 
+  summarize(n = n_distinct(geo_location)) %>% 
   ggplot(aes(x = year, y = n, color = locationabbr)) + 
   geom_line() + 
   theme(legend.position = "bottom")
@@ -124,7 +124,7 @@ Here is my table that shows the most popular item in each of the following aisle
 
 ```{r insta_app_coff}
 library(p8105.datasets)
-insta_app_coff = instacart %>% 
+instacart %>% 
   filter(product_name == "Pink Lady Apples" | product_name == "Coffee Ice Cream") %>% 
   group_by(product_name, order_dow) %>% 
   summarize(mean_hour = mean(order_hour_of_day)) %>% 
