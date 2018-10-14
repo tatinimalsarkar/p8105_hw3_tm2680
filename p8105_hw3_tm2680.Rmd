@@ -135,11 +135,14 @@ instacart %>%
 
 # Problem 3
 
+The `ny_noaa` dataset contains `r nrow(ny_noaa)` observations and `r ncol(ny_noaa)` variables. Each observation refers to a specific day at a specific location and provides data such as precipitation (`prcp`), snowfall (`snow`), and temperatures (maximum temperature is `tmax`; minimum temperature is `tmin`). Quite a bit of data is missing. 
+Variable `prcp` contains `r sum(is.na(ny_noaa$prcp))` missing values. Variable `snow` contains  `r sum(is.na(ny_noaa$snow))` missing values. Variable `snwd` contains `r sum(is.na(ny_noaa$snwd))` missing values. Variable `tmax` contains `r sum(is.na(ny_noaa$tmax))` missing values. Variable `tmin` contains `r sum(is.na(ny_noaa$tmin))` missing values.
+
 ```{r noaa_clean}
 noaa = ny_noaa %>% 
   janitor::clean_names() %>% 
   mutate(year = lubridate::year(date),
          month = lubridate::month(date),
-         day = lubridate::wday(date))
+         day = lubridate::day(date))
 ```
 
