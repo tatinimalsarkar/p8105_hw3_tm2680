@@ -11,6 +11,7 @@ library(tidyverse)
 devtools::install_github("p8105/p8105.datasets")
 library(ggridges)
 library(lubridate)
+library(patchwork)
 library(p8105.datasets)
 ```
 
@@ -38,8 +39,14 @@ brfss_data %>%
   group_by(locationabbr, year) %>% 
   summarize(n = n_distinct(geo_location)) %>% 
   ggplot(aes(x = year, y = n, color = locationabbr)) + 
-  geom_line() + 
-  theme(legend.position = "bottom")
+  geom_line() +
+  labs(
+    title = "Spaghetti plot",
+    x = "Year",
+    y = "Number of locations in each state",
+    caption = "Data from BRFSS"
+  ) +
+  scale_color_hue(name = "State")
 ```
 
 Here is my spaghetti plot showing the number of locations across time for the `brfss_data` dataset. The colors correspond to state, and the data is from 2002 to 2010. 
@@ -52,7 +59,8 @@ brfss_data %>%
   janitor::clean_names() %>% 
   filter(year == 2002 | year == 2006 | year == 2010) %>% 
   summarize(mean_exc = mean(excellent, na.rm = TRUE),
-            sd_exc = sd(excellent, na.rm = TRUE)) 
+            sd_exc = sd(excellent, na.rm = TRUE)) %>% 
+  knitr::kable()
 ```
 
 This is my table that shows the mean and standard deviation for the proportion of "Excellent" responses across all locations in New York for the years 2002, 2006, and 2010. 
@@ -70,15 +78,15 @@ brfss_data %>%
   gather(response, means, mean_exc:mean_poor) %>% 
   ggplot(aes(x = year, y = means, color = locationabbr)) +
   geom_line() + 
-  facet_grid( ~ response)
-  theme(legend.position = "bottom")
+  facet_grid( ~ response) +
+  scale_color_hue(name = "State")
 ```
 
 Here is my 5-panel plot of distribution of state-level averages of the response types over time.
 
 # Problem 2
 
-The `instacart` dataset contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. These variables describe orders from Instacart, a grocery service. For instance, `aisle` (e.g. fresh fruits) and `department`  (e.g. canned goods) refer to the aisle and department the specific product within that order comes from. Every product from each order is listed as its own observation. For example, `order_id` 1 has 8 observations, related to 8 different products. We assume that `order_dow` = 0 corresponds to Sunday.
+The `instacart` dataset contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. These variables describe orders from Instacart, a grocery service. For instance, `aisle` (e.g. fresh fruits) and `department`  (e.g. canned goods) refer to the aisle and department the specific product within that order comes from. Every product from each order is listed as its own observation. For example, `order_id` 1 has 8 observations, related to 8 different products. We assume that `order_dow` = 6 corresponds to Sunday.
 
 ```{r insta_expl}
 instacart %>% 
@@ -103,8 +111,8 @@ instacart %>%
     y = "Number of items ordered",
     caption = "Data from P8105 Instacart dataset"
   ) +
-  scale_x_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170),
-                     labels = c("0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170"))
+  scale_x_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140),
+                     labels = c("0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140")) +
   theme(legend.position = "bottom")
 ```
 
@@ -118,8 +126,9 @@ instacart %>%
   summarize(n_prod_ord = n()) %>% 
   filter(min_rank(desc(n_prod_ord)) < 2) %>% 
   select(-n_prod_ord) %>% 
-  as_tibble()
+  knitr::kable()
 ```
+
 Here is my table that shows the most popular item in each of the following aisles.
 
 ```{r insta_app_coff}
@@ -132,20 +141,19 @@ instacart %>%
     hour = lubridate::hour(date_decimal(mean_hour)),
     hour = format(strptime(hour, format = "%H"), "%I %p")) %>% 
   select(-order_dow, -mean_hour) %>% 
-  spread(day, hour)
+  spread(day, hour) %>% 
+  knitr::kable()
 ```
 
 # Problem 3
 
-The `ny_noaa` dataset contains `r nrow(ny_noaa)` observations and `r ncol(ny_noaa)` variables. Each observation refers to a specific day at a specific location and provides data such as precipitation (`prcp`), snowfall (`snow`), and temperatures (maximum temperature is `tmax`; minimum temperature is `tmin`). Quite a bit of data is missing. 
-Variable `prcp` contains `r sum(is.na(ny_noaa$prcp))` missing values. Variable `snow` contains  `r sum(is.na(ny_noaa$snow))` missing values. Variable `snwd` contains `r sum(is.na(ny_noaa$snwd))` missing values. Variable `tmax` contains `r sum(is.na(ny_noaa$tmax))` missing values. Variable `tmin` contains `r sum(is.na(ny_noaa$tmin))` missing values.
+The `ny_noaa` dataset contains `r nrow(ny_noaa)` observations and `r ncol(ny_noaa)` variables. Each observation refers to a specific day at a specific location and provides data such as precipitation (`prcp`), snowfall (`snow`), and temperatures (maximum temperature is `tmax`; minimum temperature is `tmin`). Quite a bit of data is missing. Variable `prcp` contains `r sum(is.na(ny_noaa$prcp))` missing values. Variable `snow` contains  `r sum(is.na(ny_noaa$snow))` missing values. Variable `snwd` contains `r sum(is.na(ny_noaa$snwd))` missing values. Variable `tmax` contains `r sum(is.na(ny_noaa$tmax))` missing values. Variable `tmin` contains `r sum(is.na(ny_noaa$tmin))` missing values.
 
 ```{r noaa_clean}
 noaa_clean = ny_noaa %>% 
   janitor::clean_names() %>% 
   mutate(tmin = as.numeric(tmin),
-         tmax = as.numeric(tmax),
-         prcp = as.numeric(prcp)) %>% 
+         tmax = as.numeric(tmax)) %>% 
   mutate(tmin = tmin / 10,
          tmax = tmax / 10,
          prcp = prcp / 10) %>% 
@@ -183,3 +191,27 @@ noaa_clean %>%
 ```
 
 Here is my plot showing average max temperature across years. Average max temperatures seem higher in July than January, which seems logical. There are some low outliers in both panels.
+
+```{r noaa_tmax_tmin}
+tmax_tmin_p = ggplot(noaa_clean, aes(x = tmin, y = tmax)) +
+  geom_hex() +
+  theme(legend.position = "bottom") +
+  labs(
+    x = "Minimum temperature (Celsius)",
+    y = "Maximum temperature (Celsius)"
+  )
+
+snow_dist_p = noaa_clean %>% 
+  filter(0 < snow & snow < 100) %>% 
+  mutate(year = as.character(year)) %>% 
+  ggplot(aes(x = snow, y = year)) +
+  geom_density_ridges(scale = 0.85) +
+  labs(
+    x = "Snow (mm)",
+    y = "Year"
+  )
+
+(tmax_tmin_p + snow_dist_p)
+```
+
+Here is my 2-panel plot. Panel 1 shows a hexplot of `tmax` versus `tmin` with all the data. Panel 2 uses a ridge plot to show the distribution of `snow` between 0 and 100 mm by `year`.
