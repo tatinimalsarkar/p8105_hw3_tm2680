@@ -103,6 +103,8 @@ instacart %>%
     y = "Number of items ordered",
     caption = "Data from P8105 Instacart dataset"
   ) +
+  scale_x_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170),
+                     labels = c("0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170"))
   theme(legend.position = "bottom")
 ```
 
@@ -154,12 +156,30 @@ noaa_clean = ny_noaa %>%
 
 I made new variables for year, month, and day. Temperatures were provided in tenths of Celsius, which did not seem reasonable, so I converted `tmin` and `tmax` to Celsius. Precipitation was in tenths of millimeters, so I converted `prcp` to millimeters. 
 
-```{r common_snow}
+```{r noaa_common_snow}
 noaa_clean %>% 
   group_by(snow) %>% 
   summarize(common_snow = n()) %>% 
   filter(min_rank(desc(common_snow)) < 4) 
 ```
 
-
 The most commonly observed values are 0mm, 25mm, and NA. NA is popular because there are a lot of missing entries. 0mm and 25mm are still quite low amounts of snowfall, but represent 0in and 1in in the metric system.
+
+```{r noaa_max_plot}
+noaa_clean %>% 
+  filter(month == 1 | month == 7) %>% 
+  group_by(month, year, id) %>% 
+  summarize(mean_tmax = mean(tmax), na.rm = TRUE) %>% 
+  ggplot(aes(x = year, y = mean_tmax)) + 
+  geom_point(alpha = 0.5) + 
+  geom_smooth() +
+  facet_grid( ~ month) +
+  labs(
+    title = "Average max temperature",
+    x = "Year",
+    y = "Mean max temperature (Celsius)",
+    caption = "Data from NY NOAA dataset. 1 is January. 7 is July."
+  )
+```
+
+Here is my plot showing average max temperature across years. Average max temperatures seem higher in July than January, which seems logical. There are some low outliers in both panels.
