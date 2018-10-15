@@ -79,7 +79,8 @@ brfss_data %>%
   ggplot(aes(x = year, y = means, color = locationabbr)) +
   geom_line() + 
   facet_grid( ~ response) +
-  scale_color_hue(name = "State")
+  scale_color_hue(name = "State") + 
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 Here is my 5-panel plot of distribution of state-level averages of the response types over time.
